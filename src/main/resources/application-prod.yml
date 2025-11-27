@@ -1,0 +1,41 @@
+spring:
+  config:
+    activate:
+      on-profile: prod             # This configuration is only active when 'prod' profile is enabled
+
+server:
+  port: 8080                       # Can be overridden by environment variable SERVER_PORT in real deployments
+
+logging:
+  level:
+    root: INFO                     # Standard log level in production
+    org.springframework.web: INFO
+    org.hibernate.SQL: WARN        # Avoid logging every SQL statement in production
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info       # Expose only minimal operational endpoints in production
+  endpoint:
+    health:
+      show-details: when_authorized
+
+springdoc:
+  swagger-ui:
+    enabled: false                 # Optionally disable Swagger UI in production for security reasons
+    # If your organization allows it in prod, set this to true
+
+# Production CORS settings - adjust to your real front-end domains
+cors:
+  allowed-origins:
+    - "https://your-frontend.company.com"
+  allowed-methods:
+    - GET
+    - POST
+    - PUT
+    - DELETE
+  allowed-headers:
+    - "Authorization"
+    - "Content-Type"
+  allow-credentials: true

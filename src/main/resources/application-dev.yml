@@ -1,0 +1,34 @@
+spring:
+  config:
+    activate:
+      on-profile: dev              # This configuration is only active when 'dev' profile is enabled
+
+  main:
+    banner-mode: console           # Show Spring Boot banner in console (useful in dev)
+
+logging:
+  level:
+    root: DEBUG                    # More verbose logging in development
+    org.springframework.web: DEBUG # Detailed logs for web layer
+    org.hibernate.SQL: DEBUG       # Log SQL statements (if JPA is used in the service)
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"               # Expose all actuator endpoints in dev only (NEVER do this in prod)
+  endpoint:
+    health:
+      show-details: always         # Always show full health details in dev
+
+springdoc:
+  swagger-ui:
+    enabled: true                  # Ensure Swagger is always enabled in dev
+
+# Dev-specific CORS overrides (optional)
+cors:
+  allowed-origins:
+    - "http://localhost:3000"
+    - "http://localhost:4200"
+    - "http://localhost:5173"
+  allow-credentials: true

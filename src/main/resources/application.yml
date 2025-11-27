@@ -1,0 +1,48 @@
+spring:
+  application:
+    name: hex-microservice-blueprint
+
+server:
+  port: 8080
+  error:
+    include-message: always        # Always include exception messages in error responses (useful for debugging)
+    include-binding-errors: always # Include validation error details in error responses
+
+springdoc:
+  api-docs:
+    enabled: true                  # Enable OpenAPI /v3/api-docs endpoint
+    path: /v3/api-docs             # Path where OpenAPI JSON is exposed
+  swagger-ui:
+    enabled: true                  # Enable Swagger UI
+    path: /swagger-ui              # Base path for Swagger UI
+    operations-sorter: method      # Sort operations by HTTP method (GET, POST, etc.)
+    tags-sorter: alpha             # Sort tags alphabetically
+    display-request-duration: true # Show request duration in Swagger UI
+    try-it-out-enabled: true       # Enable "Try it out" button by default
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info       # Expose only basic operational endpoints by default
+  endpoint:
+    health:
+      show-details: when_authorized # Show health details only for authorized users (secure by default mindset)
+
+logging:
+  level:
+    root: INFO                     # Default logging level for the whole application
+
+cors:
+  allowed-origins:
+    - "http://localhost:3000"
+    - "http://localhost:4200"
+  allowed-methods:
+    - GET
+    - POST
+    - PUT
+    - DELETE
+    - OPTIONS
+  allowed-headers:
+    - "*"
+  allow-credentials: true

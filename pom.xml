@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>com.wolfbonobo.hex</groupId>
+	<artifactId>hex-microservice-blueprint</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+
+	<!-- Inherit Spring Boot's dependency and plugin management -->
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>3.3.4</version> <!-- Boot 3.x compatible with Java 21 -->
+		<relativePath /> <!-- always resolve from repo -->
+	</parent>
+
+	<!-- Human-readable project name -->
+	<name>hex-microservice-blueprint</name>
+	<!-- TODO: change this to the real project URL -->
+	<url>http://www.example.com</url>
+
+	<properties>
+		<!-- Java language level for compilation and runtime -->
+		<java.version>21</java.version>
+		<!-- UTF-8 as default encoding -->
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+
+	<dependencies>
+		<!-- Spring MVC stack for RESTful APIs -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+
+		<!-- Bean validation (Jakarta Validation) -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-validation</artifactId>
+		</dependency>
+
+		<!-- In-memory H2 database for local development / samples -->
+		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+			<scope>runtime</scope>
+		</dependency>
+
+		<!-- Spring Boot starter for tests (JUnit 5, AssertJ, MockMvc, etc.) -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+		<!-- OpenAPI 3 + Swagger UI starter for Spring Boot 3.x (WebMVC stack) -->
+		<dependency>
+			<groupId>org.springdoc</groupId>
+			<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+			<version>2.6.0</version> <!-- version compatible with Spring Boot
+			3.3.x -->
+		</dependency>
+
+		<!-- Lombok to reduce boilerplate (getters, setters, builders, etc.) -->
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<optional>true</optional>
+		</dependency>
+
+		<!-- MapStruct core: type-safe mapper between DTOs and domain objects -->
+		<dependency>
+			<groupId>org.mapstruct</groupId>
+			<artifactId>mapstruct</artifactId>
+			<version>1.5.5.Final</version>
+		</dependency>
+
+		<!-- MapStruct annotation processor: generates mapper implementations -->
+		<dependency>
+			<groupId>org.mapstruct</groupId>
+			<artifactId>mapstruct-processor</artifactId>
+			<version>1.5.5.Final</version>
+			<scope>provided</scope>
+		</dependency>
+		
+		<!-- Generate metadata for @ConfigurationProperties (IDE support, hints, etc.) -->
+		<dependency>
+		    <groupId>org.springframework.boot</groupId>
+		    <artifactId>spring-boot-configuration-processor</artifactId>
+		    <optional>true</optional>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<!-- Integrates Spring Boot with Maven (repackage, run, etc.) -->
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+		</plugins>
+	</build>
+
+</project>
