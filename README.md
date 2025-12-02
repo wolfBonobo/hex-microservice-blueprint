@@ -254,4 +254,4 @@ If you break the architecture, feel free not to.
 
 ## 📄 License
 
-This project is released under **CC0-1.0** — do whatever you want with it.
+This project is released under **MIT** — use it freely.
