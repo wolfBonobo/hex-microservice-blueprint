@@ -1,257 +1,157 @@
-# Hex Microservice Blueprint
+# ⬢ Hexagonal Microservice Blueprint (CQRS)
 
-A template repository for building microservices using **Hexagonal Architecture** and **CQRS**.  
-Provides a clean separation between domain, application logic, and infrastructure adapters, enabling scalable, maintainable, and framework-agnostic service development.
+A production-ready template for building microservices using **Hexagonal Architecture (Ports & Adapters)** and **CQRS**.
+
+This blueprint provides a strict separation of concerns, ensuring that your **Domain** logic remains pure and unaffected by framework or infrastructure changes.
 
 ---
 
 ## 🧱 Architecture Overview
 
-This template implements **Hexagonal Architecture** combined with **CQRS**:
+This project follows the **Dependency Rule**: source code dependencies can only point **inwards**.
 
-### **Domain Layer**
-- Pure business rules.
-- Contains domain entities, aggregates, value objects, and domain services.
-- No framework dependencies.
+### 1. Domain Layer (The Core)
+* **Path:** `src/main/java/.../domain`
+* **Responsibility:** Pure business logic and rules.
+* **Dependencies:** None. Pure Java. No Spring, no Hibernate, no Lombok on entities.
+* **Components:** Entities, Value Objects, Domain Services, Business Exceptions.
 
-### **Application Layer**
-Implements use cases through **CQRS**:
-- **Command** — state-changing operations.
-- **Query** — read-only operations.  
+### 2. Application Layer (The Orchestrator)
+* **Path:** `src/main/java/.../application`
+* **Responsibility:** Orchestrates use cases and enforces **CQRS**:
+  * **Commands:** State-changing operations.
+  * **Queries:** Read-only operations.
+* **Components:**
+  * **Input Ports** (Use Case interfaces)
+  * **Use Case implementations** (command/query)
+  * **Output Ports** (interfaces to external systems)
 
-Contains:
-- Ports (in/out)
-- Application services  
-- DTO models used only inside the application layer  
-
-### **Infrastructure Layer**
-- Framework-specific and external integrations.
-- Contains adapters:
-  - **Inbound adapters** (REST controllers, messaging consumers, CLI, etc.)
-  - **Outbound adapters** (database repositories, external APIs, messaging publishers)
-- Configuration (OpenAPI, Spring Boot config, monitoring, etc.)  
-
-This approach results in a flexible and testable microservice architecture with minimal coupling.
+### 3. Infrastructure Layer (The Implementation)
+* **Path:** `src/main/java/.../infrastructure`
+* **Responsibility:** Technical details and frameworks.
+* **Dependencies:** Spring Boot, persistence, messaging, external APIs.
+* **Components:** Controllers, adapters, repositories, configuration.
 
 ---
 
-## 📁 Suggested Project Structure
+## 📂 Project Structure
 
-```
-.
+```text
 ├── src
 │   ├── main
-│   │   ├── java
-│   │   │   └── com.example.hexblueprint
-│   │   │       ├── application
-│   │   │       │   ├── command
-│   │   │       │   │   ├── model
-│   │   │       │   │   ├── ports
-│   │   │       │   │   └── service
-│   │   │       │   └── query
-│   │   │       │       ├── model
-│   │   │       │       ├── ports
-│   │   │       │       └── service
-│   │   │       ├── domain
-│   │   │       │   ├── command
-│   │   │       │   ├── query
-│   │   │       │   └── common
-│   │   │       └── infrastructure
-│   │   │           ├── adapters
-│   │   │           │   ├── in
-│   │   │           │   └── out
-│   │   │           ├── configuration
-│   │   │           └── monitor
+│   │   └── java
+│   │       └── com.wolfbonobo.hex.blueprint
+│   │           ├── application
+│   │           │   ├── command
+│   │           │   │   ├── model
+│   │           │   │   └── usecase
+│   │           │   ├── query
+│   │           │   │   ├── model
+│   │           │   │   └── usecase
+│   │           │   ├── ports
+│   │           │   │   ├── in
+│   │           │   │   │   ├── command
+│   │           │   │   │   └── query
+│   │           │   │   └── out
+│   │           │   │       ├── persistence
+│   │           │   │       └── external
+│   │           │   └── common
+│   │           │       └── events
+│   │           ├── domain
+│   │           │   ├── model
+│   │           │   ├── service
+│   │           │   └── exception
+│   │           └── infrastructure
+│   │               ├── adapters
+│   │               │   ├── in
+│   │               │   │   ├── rest
+│   │               │   │   └── messaging
+│   │               │   └── out
+│   │               │       ├── persistence
+│   │               │       ├── messaging
+│   │               │       └── external
+│   │               ├── configuration
+│   │               └── observability
 │   └── test
-├── .gitignore
-└── README.md
+│       └── java
+│           └── com.wolfbonobo.hex.blueprint
+│               ├── architecture
+│               ├── application
+│               ├── domain
+│               └── infrastructure
 ```
 
-> You may rename packages to match your organization’s standards.
+---
 
+## 📏 Naming Conventions
+
+| Concept | Suffix | Example | Location |
+|-------|--------|---------|----------|
+| Input Port | `UseCase` | `CreateOrderUseCase` | `application/ports/in` |
+| Use Case Impl | `UseCaseImpl` | `CreateOrderUseCaseImpl` | `application/*/usecase` |
+| Output Port | `Port` | `OrderRepositoryPort` | `application/ports/out` |
+| Adapter (DB) | `Adapter` | `OrderJpaAdapter` | `infrastructure/adapters/out` |
+| Adapter (Web) | `Controller` | `OrderController` | `infrastructure/adapters/in` |
+| Domain Entity | — | `Order` | `domain/model` |
 
 ---
 
 ## 🧰 Tech Stack
 
-| Component            | Version                                   | Notes                              |
-|----------------------|--------------------------------------------|------------------------------------|
-| **Java**             | 21 LTS                                     | Template aligned with modern LTS   |
-| **Spring Boot**      | 3.3.x                                      | Native Java 21 support             |
-| **Spring Web (MVC)** | latest via Boot                            | REST endpoints                     |
-| **Spring Validation**| latest via Boot                            | Input validation                   |
-| **Springdoc OpenAPI**| `springdoc-openapi-starter-webmvc-ui` 2.x  | Swagger UI & OpenAPI               |
-| **JUnit 5**          | via Boot                                   | Unit & integration tests           |
-| **H2 Database**      | latest                                     | Optional local storage             |
-| **Lombok**           | 1.18.x                                     | Boilerplate reduction              |
-| **MapStruct**        | 1.5.x                                      | Mapping DTO ↔ domain               |
-
----
-
-# 📡 Available Endpoints
-
-### **Health Check**
-```
-GET /health
-```
-
-### **Swagger / OpenAPI**
-- Swagger UI → http://localhost:8080/swagger-ui  
-- OpenAPI JSON → http://localhost:8080/v3/api-docs
-
----
-
-# ⚙️ Base Application Configuration
-
-The main `application.yml` contains only environment-agnostic configuration:
-
-- Application metadata
-- Swagger / Springdoc
-- Server port
-- Basic Actuator exposure
-- Default logging settings
-
-Environment-specific configuration must be placed inside dedicated profile files:
-
-```
-application-dev.yml
-application-prod.yml
-```
-
----
-
-# 🔀 Application Profiles
-
-This template includes multiple Spring Boot profiles.
-
-## **`dev` profile**
-- Verbose logging (DEBUG)
-- Full Actuator endpoint exposure
-- Swagger always enabled
-- Health details always visible
-
-Activate:
-
-```bash
-mvn spring-boot:run -Dspring-boot.run.profiles=dev
-```
-
-## **`prod` profile**
-- Secure Actuator exposure
-- Swagger UI disabled by default
-- Optimized logging
-
-Activate:
-
-```bash
-java -jar app.jar --spring.profiles.active=prod
-```
-
----
-
-# 🌐 Global CORS Configuration
-
-A global CORS configuration is included:
-
-```
-src/main/java/.../infrastructure/configuration/GlobalCorsConfig.java
-```
-
-It:
-
-- Applies to all API endpoints
-- Allows common development origins
-- Supports common HTTP methods
-- Can be easily customized per microservice
-
----
-
-## 🚀 Getting Started
-
-
-### 1. Create a new microservice from this template
-
-Click **“Use this template” → “Create a new repository”**.
-
-### 2. Clone your newly created repository
-
-```
-git clone https://github.com/<your-org>/<your-service>.git
-```
-
-### 3. Update the project identifiers
-
-- Change the base package (`com.example.hexblueprint` → your domain).
-- Adjust metadata like artifact name, module name, descriptions, etc.
-
-### 4. Start implementing your service
-
-- Model your **domain**.
-- Add **command** and **query** use cases in the application layer.
-- Add inbound/outbound adapters as needed.
+| Component | Version | Notes |
+|---------|---------|------|
+| Java | 21 LTS | Modern LTS baseline |
+| Spring Boot | 3.3.x | Java 21 native |
+| Spring Web | via Boot | REST APIs |
+| Spring Validation | via Boot | Input validation |
+| Springdoc OpenAPI | 2.x | Swagger UI |
+| Lombok | 1.18.x | Boilerplate reduction |
+| MapStruct | 1.5.x | DTO ↔ Domain mapping |
+| ArchUnit | 1.3.x | Architecture enforcement |
+| H2 | latest | Local/dev database |
 
 ---
 
 ## 🧪 Testing Strategy
 
-This template supports testing at multiple levels:
-
-### Unit Tests
-- Domain logic  
-- Application services  
-- Port-level interactions (using mocks)
-
-### Adapter Tests
-- REST layer  
-- Messaging  
-- Database adapters  
-
-### Integration Tests
-- End-to-end tests bridging application and infrastructure layers.
-
-You can extend the test setup according to your preferred testing stack.
-
----
-
-## 🧩 Extending the Blueprint
-
-Common enhancements include:
-
-- Database adapters (SQL/NoSQL)
-- Messaging publishers/consumers
-- Global exception handling
-- Validation layers
-- Observability (metrics, tracing, logging)
-- API documentation
-- Code generation helpers
-- CI/CD pipelines
-
-This template stays intentionally minimal so you can adapt it to your ecosystem.
+* **Architecture Tests:** ArchUnit (mandatory)
+* **Unit Tests:** Domain & application use cases
+* **Port Tests:** Mocks or manual test doubles
+* **Integration Tests:** Infrastructure adapters
 
 ---
 
 ## 📚 Philosophy
 
-The objective of this blueprint is to:
+This blueprint exists to:
 
-- Standardize microservice creation  
-- Enforce clear architectural boundaries  
-- Reduce framework-coupling  
-- Encourage maintainable, test-friendly codebases  
-- Provide a reusable, organization-wide starting point  
+- Enforce architectural boundaries
+- Reduce framework coupling
+- Encourage testable code
+- Serve as an organization-wide standard
 
-If your project becomes a tangled mess despite using this template, congratulations:  
-the fault is statistically yours, not the template’s.  
+If the architecture is broken, the tests should fail.
+If they don’t, fix the tests.
 
 ---
 
-## 🤝 Contributing
+## 🚀 Quick Start
 
-If you improve this blueprint or generalize a pattern, feel free to open a pull request.  
-If you break the architecture, feel free not to.
+1.  **Build the project:**
+    ```bash
+    mvn clean install
+    ```
+2.  **Run locally:**
+    ```bash
+    mvn spring-boot:run
+    ```
+3.  **Check Health:**
+    Access `http://localhost:8080/actuator/health`
+4.  **View API Docs:**
+    Access `http://localhost:8080/swagger-ui.html`
 
 ---
 
 ## 📄 License
 
-This project is released under **MIT** — use it freely.
+MIT — use it freely.
